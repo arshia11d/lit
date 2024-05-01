@@ -34,6 +34,7 @@ export type BindDirectiveParametersOptions<Data> = {
 	event?: string
 	sourceUpdate?: (value: Data) => void
 	sourceUpdated?: (value: Data) => void
+	dispatchSourceAssociatedEvent?: boolean
 }
 
 type BindDirectivePart = ElementPart | AttributePart | BooleanAttributePart | PropertyPart

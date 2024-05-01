@@ -29,6 +29,14 @@ export abstract class ValueBinder<TPart extends Part = any> {
 		return this.parameters[2]?.sourceUpdated
 	}
 
+	get dispatchSourceAssociatedEvent() {
+		return this.parameters[2]?.dispatchSourceAssociatedEvent === true
+	}
+
+	get sourceAssociatedEvent() {
+		return !this.dispatchSourceAssociatedEvent ? undefined : getAssociatedEvent(this.component, this.sourceKey)
+	}
+
 	get mode() {
 		const mode = this.parameters[2]?.mode
 
@@ -93,5 +101,8 @@ export abstract class ValueBinder<TPart extends Part = any> {
 		this.sourceValue = value
 		this.component.requestUpdate(this.sourceKey)
 		this.sourceUpdated?.call(this.component, value)
+		if (this.sourceAssociatedEvent) {
+			this.element.dispatchEvent(new CustomEvent(this.sourceAssociatedEvent, { detail: value }))
+		}
 	}
 }
