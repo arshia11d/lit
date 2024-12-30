@@ -1,15 +1,15 @@
 import './index.js'
 
 describe('KeyPath', () => {
-	describe('getKeyPath', () => {
+	describe('of', () => {
 		it('should return the key path', () => {
-			expect(getKeyPath('a')).toBe('a')
-			expect(getKeyPath('a.b')).toBe('a.b')
-			expect(getKeyPath('a.b.c')).toBe('a.b.c')
+			expect(KeyPath.of('a')).toBe('a')
+			expect(KeyPath.of('a.b')).toBe('a.b')
+			expect(KeyPath.of('a.b.c')).toBe('a.b.c')
 		})
 	})
 
-	describe('getValueByKeyPath', () => {
+	describe('get', () => {
 		it('should return the value at the key path', () => {
 			const object = {
 				a: 1,
@@ -21,9 +21,9 @@ describe('KeyPath', () => {
 				}
 			}
 
-			expect(getValueByKeyPath(object, 'a')).toBe(1)
-			expect(getValueByKeyPath(object, 'b.c')).toBe(2)
-			expect(getValueByKeyPath(object as any, 'b.d.e')).toBe(3)
+			expect(KeyPath.get(object, 'a')).toBe(1)
+			expect(KeyPath.get(object, 'b.c')).toBe(2)
+			expect(KeyPath.get(object as any, 'b.d.e')).toBe(3)
 		})
 
 		it('should return undefined if the key path does not exist', () => {
@@ -37,9 +37,9 @@ describe('KeyPath', () => {
 				}
 			}
 
-			expect(getValueByKeyPath(object as any, 'a.b')).toBe(undefined)
-			expect(getValueByKeyPath(object as any, 'b.c.d')).toBe(undefined)
-			expect(getValueByKeyPath(object as any, 'b.d.e.f')).toBe(undefined)
+			expect(KeyPath.get(object as any, 'a.b')).toBe(undefined)
+			expect(KeyPath.get(object as any, 'b.c.d')).toBe(undefined)
+			expect(KeyPath.get(object as any, 'b.d.e.f')).toBe(undefined)
 		})
 
 		it('should return undefined if the key path is empty', () => {
@@ -53,19 +53,19 @@ describe('KeyPath', () => {
 				}
 			}
 
-			expect(getValueByKeyPath(object as any, '')).toBe(undefined)
+			expect(KeyPath.get(object as any, '')).toBe(undefined)
 		})
 
 		it('should return undefined if the object is undefined', () => {
-			expect(getValueByKeyPath(undefined as any, 'a')).toBe(undefined)
+			expect(KeyPath.get(undefined as any, 'a')).toBe(undefined)
 		})
 
 		it('should return null if the object is null', () => {
-			expect(getValueByKeyPath(null as any, 'a')).toBe(null)
+			expect(KeyPath.get(null as any, 'a')).toBe(null)
 		})
 	})
 
-	describe('setValueByKeyPath', () => {
+	describe('set', () => {
 		it('should set the value at the key path', () => {
 			const object = {
 				a: 1,
@@ -77,13 +77,13 @@ describe('KeyPath', () => {
 				}
 			}
 
-			setValueByKeyPath(object, 'a', 4)
+			KeyPath.set(object, 'a', 4)
 			expect(object.a).toBe(4)
 
-			setValueByKeyPath(object, 'b.c', 5)
+			KeyPath.set(object, 'b.c', 5)
 			expect(object.b.c).toBe(5)
 
-			setValueByKeyPath(object as any, 'b.d.e', 6)
+			KeyPath.set(object as any, 'b.d.e', 6)
 			expect(object.b.d.e).toBe(6)
 		})
 
@@ -98,18 +98,18 @@ describe('KeyPath', () => {
 				}
 			}
 
-			setValueByKeyPath(object as any, 'a.b', 4)
+			KeyPath.set(object as any, 'a.b', 4)
 			expect((object as any).a.b).toBe(undefined)
 
-			setValueByKeyPath(object as any, 'b.c.d', 5)
+			KeyPath.set(object as any, 'b.c.d', 5)
 			expect((object as any).b.c.d).toBe(undefined)
 
-			setValueByKeyPath(object as any, 'b.d.e.f', 6)
+			KeyPath.set(object as any, 'b.d.e.f', 6)
 			expect((object as any).b.d.e.f).toBe(undefined)
 		})
 	})
 
-	describe('isKeyPathWritable', () => {
+	describe('isWritable', () => {
 		it('should return true if the key path is writable', () => {
 			const object = {
 				a: 1,
@@ -121,9 +121,9 @@ describe('KeyPath', () => {
 				}
 			}
 
-			expect(isKeyPathWritable(object, 'a')).toBe(true)
-			expect(isKeyPathWritable(object, 'b.c')).toBe(true)
-			expect(isKeyPathWritable(object as any, 'b.d.e')).toBe(true)
+			expect(KeyPath.isWritable(object, 'a')).toBe(true)
+			expect(KeyPath.isWritable(object, 'b.c')).toBe(true)
+			expect(KeyPath.isWritable(object as any, 'b.d.e')).toBe(true)
 		})
 
 		it('should return false if the key path is not writable', () => {
@@ -137,9 +137,9 @@ describe('KeyPath', () => {
 				}
 			}
 
-			expect(isKeyPathWritable(object, 'b')).toBe(true)
-			expect(isKeyPathWritable(object, 'b.d')).toBe(true)
-			expect(isKeyPathWritable(object as any, 'b.d.e.f')).toBe(false)
+			expect(KeyPath.isWritable(object, 'b')).toBe(true)
+			expect(KeyPath.isWritable(object, 'b.d')).toBe(true)
+			expect(KeyPath.isWritable(object as any, 'b.d.e.f')).toBe(false)
 		})
 
 		it('should return false if the key path does not exist', () => {
@@ -153,9 +153,9 @@ describe('KeyPath', () => {
 				}
 			}
 
-			expect(isKeyPathWritable(object as any, 'a.b')).toBe(false)
-			expect(isKeyPathWritable(object as any, 'b.c.d')).toBe(false)
-			expect(isKeyPathWritable(object as any, 'b.d.e.f')).toBe(false)
+			expect(KeyPath.isWritable(object as any, 'a.b')).toBe(false)
+			expect(KeyPath.isWritable(object as any, 'b.c.d')).toBe(false)
+			expect(KeyPath.isWritable(object as any, 'b.d.e.f')).toBe(false)
 		})
 
 		it('should return false if the key path is empty', () => {
@@ -169,15 +169,15 @@ describe('KeyPath', () => {
 				}
 			}
 
-			expect(isKeyPathWritable(object as any, '')).toBe(false)
+			expect(KeyPath.isWritable(object as any, '')).toBe(false)
 		})
 
 		it('should return false if the object is undefined', () => {
-			expect(isKeyPathWritable(undefined as any, 'a')).toBe(false)
+			expect(KeyPath.isWritable(undefined as any, 'a')).toBe(false)
 		})
 
 		it('should return false if the object is null', () => {
-			expect(isKeyPathWritable(null as any, 'a')).toBe(false)
+			expect(KeyPath.isWritable(null as any, 'a')).toBe(false)
 		})
 	})
 })

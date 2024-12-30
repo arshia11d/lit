@@ -37,7 +37,7 @@ export abstract class ValueBinder<TPart extends Part = any> {
 		}
 
 		const sourceWritable = this.keyPath
-			? isKeyPathWritable(this.component[this.sourceKey], this.keyPath)
+			? KeyPath.isWritable(this.component[this.sourceKey], this.keyPath)
 			: Object.isWritable(this.component, this.sourceKey)
 
 		const targetWritable = Object.isWritable(this.component, this.property)
@@ -58,13 +58,13 @@ export abstract class ValueBinder<TPart extends Part = any> {
 
 	get sourceValue() {
 		return this.keyPath
-			? getValueByKeyPath(this.source, this.keyPath as string)
+			? KeyPath.get(this.source, this.keyPath as string)
 			: this.source
 	}
 	set sourceValue(value: unknown) {
 		if (this.mode !== BindingMode.OneWay) {
 			this.keyPath
-				? setValueByKeyPath(this.source, this.keyPath as string, value)
+				? KeyPath.set(this.source, this.keyPath as string, value)
 				: this.source = value
 
 			for (const integration of bindingIntegrations) {

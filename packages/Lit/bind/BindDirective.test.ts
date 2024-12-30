@@ -52,7 +52,7 @@ function expectBindToPass<T>(parameters: {
 	}) => {
 		const { fixture, property, expectedMode } = parameters
 		const keyPath = !parameters.keyPath ? property : `${property}.${parameters.keyPath}`
-		const updateValue = parameters.updateValue ?? (updatedValue => setValueByKeyPath(fixture.component as any, keyPath, updatedValue))
+		const updateValue = parameters.updateValue ?? (updatedValue => KeyPath.set(fixture.component as any, keyPath, updatedValue))
 
 		const mit = (modes: Array<BindingMode>, name: string, callback: () => void) => {
 			if (modes.includes(expectedMode)) {
@@ -101,14 +101,14 @@ function expectBindToPass<T>(parameters: {
 		mit([BindingMode.OneWayToSource, BindingMode.TwoWay], 'should bind from target to source when dispatching associated event', async () => {
 			fixture.component.bindableComponent.change.dispatch(updatedValue)
 			await fixture.updateComplete
-			expect(getValueByKeyPath(fixture.component as any, keyPath)).toBe(updatedValue)
+			expect(KeyPath.get(fixture.component as any, keyPath)).toBe(updatedValue)
 		})
 
 		mit([BindingMode.OneWayToSource, BindingMode.TwoWay], 'should call sourceUpdate and sourceUpdated with the updated value while binding from target to source', async () => {
 			fixture.component.bindableComponent.change.dispatch(updatedValue)
 			await fixture.updateComplete
 			expect(fixture.component.sourceUpdate).toHaveBeenCalledOnceWith(updatedValue)
-			expect(getValueByKeyPath(fixture.component as any, keyPath)).toBe(updatedValue)
+			expect(KeyPath.get(fixture.component as any, keyPath)).toBe(updatedValue)
 			expect(fixture.component.sourceUpdated).toHaveBeenCalledOnceWith(updatedValue)
 		})
 
@@ -128,14 +128,14 @@ function expectBindToPass<T>(parameters: {
 		mit([BindingMode.OneWay], 'should not bind from target to source when dispatching associated event', async () => {
 			fixture.component.bindableComponent.change.dispatch(updatedValue)
 			await fixture.updateComplete
-			expect(getValueByKeyPath(fixture.component as any, keyPath)).not.toBe(updatedValue)
+			expect(KeyPath.get(fixture.component as any, keyPath)).not.toBe(updatedValue)
 		})
 
 		mit([BindingMode.OneWay], 'should not call sourceUpdate and sourceUpdated with the updated value while not binding from target to source', async () => {
 			fixture.component.bindableComponent.change.dispatch(updatedValue)
 			await fixture.updateComplete
 			expect(fixture.component.sourceUpdate).not.toHaveBeenCalledWith(updatedValue)
-			expect(getValueByKeyPath(fixture.component as any, keyPath)).not.toBe(updatedValue)
+			expect(KeyPath.get(fixture.component as any, keyPath)).not.toBe(updatedValue)
 			expect(fixture.component.sourceUpdated).not.toHaveBeenCalledWith(updatedValue)
 		})
 
@@ -272,7 +272,7 @@ function expectBindToPass<T>(parameters: {
 	describe('implicit one-way-to-source binding', () => {
 		const original = Object.isWritable
 		beforeAll(() => {
-			spyOn(window, 'isKeyPathWritable').and.returnValue(true)
+			spyOn(KeyPath, 'isWritable').and.returnValue(true)
 			spyOn(Object, 'isWritable').and.callFake((target: any, key: string) =>
 				!(key === 'value' && (target.tagName?.toLowerCase().includes('implicit-one-way-to-source-binder') ?? false)) && original(target, key))
 		})
